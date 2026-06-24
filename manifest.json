@@ -1,0 +1,16 @@
+{
+  "Name": "Health Bars",
+  "Author": "GustavoAM",
+  "Version": "1.0.0",
+  "Description": "Displays a horizontal health bar above the player character.",
+  "UniqueID": "GustavoAM.HealthBars",
+  "EntryDll": "HealthBars.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [],
+  "Dependencies": [
+    {
+      "UniqueID": "spacechase0.GenericModConfigMenu",
+      "IsRequired": false
+    }
+  ]
+}
