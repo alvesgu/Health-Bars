@@ -31,10 +31,13 @@ public class ModConfig
     public int HorizontalOffset { get; set; } = 0;
 
     /// <summary>
-    /// Overall opacity of the bar (0.0 = invisible, 1.0 = fully solid).
+    /// Overall opacity of the player bar (0.0 = invisible, 1.0 = fully solid).
     /// Applied to both the fill and the border.
     /// </summary>
     public float Opacity { get; set; } = 1.0f;
+
+    /// <summary>When false, the player bar is hidden while the player is at full health.</summary>
+    public bool ShowBarAtFullHealth { get; set; } = false;
 
     /// <summary>
     /// Name of a custom-art skin PNG from assets/skins/, or "None" to use procedural styles.
@@ -101,6 +104,33 @@ public class ModConfig
     public int BorderG { get; set; } = 30;
     public int BorderB { get; set; } = 30;
 
+    // ── Monster bars ──────────────────────────────────────────────────────────
+
+    /// <summary>Whether to draw health bars above monsters.</summary>
+    public bool ShowMonsterBars { get; set; } = true;
+
+    /// <summary>When false, bars are hidden until a monster has taken at least one hit.</summary>
+    public bool ShowMonsterBarsAtFullHealth { get; set; } = true;
+
+    /// <summary>Width of each monster health bar in pixels.</summary>
+    public int MonsterBarWidth { get; set; } = 60;
+
+    /// <summary>Height of each monster health bar in pixels.</summary>
+    public int MonsterBarHeight { get; set; } = 12;
+
+    /// <summary>Opacity of monster health bars, independent of the player bar opacity.</summary>
+    public float MonsterOpacity { get; set; } = 1.0f;
+
+    /// <summary>Border thickness around each monster health bar in pixels. 0 = no border.</summary>
+    public int MonsterBorderSize { get; set; } = 2;
+
+    /// <summary>
+    /// Fill color mode for monster bars:
+    ///   "Red" / "Green" / "Blue" / "Yellow" / "Cyan" / "White" — fixed preset
+    ///   "Gradient" — uses the same gradient stops as the player bar
+    /// </summary>
+    public string MonsterColorMode { get; set; } = "Red";
+
     // ── Helpers ────────────────────────────────────────────────────────────────
 
     /// <summary>Resets every setting to its default value (same as a fresh install).</summary>
@@ -117,7 +147,8 @@ public class ModConfig
         BarHeight        = source.BarHeight;
         VerticalOffset   = source.VerticalOffset;
         HorizontalOffset = source.HorizontalOffset;
-        Opacity          = source.Opacity;
+        Opacity              = source.Opacity;
+        ShowBarAtFullHealth  = source.ShowBarAtFullHealth;
         ColorMode        = source.ColorMode;
         SkinName         = source.SkinName;
         BarStyle         = source.BarStyle;
@@ -134,8 +165,15 @@ public class ModConfig
         GradEndR         = source.GradEndR;
         GradEndG         = source.GradEndG;
         GradEndB         = source.GradEndB;
-        BorderR          = source.BorderR;
-        BorderG          = source.BorderG;
-        BorderB          = source.BorderB;
+        BorderR                    = source.BorderR;
+        BorderG                    = source.BorderG;
+        BorderB                    = source.BorderB;
+        ShowMonsterBars             = source.ShowMonsterBars;
+        ShowMonsterBarsAtFullHealth = source.ShowMonsterBarsAtFullHealth;
+        MonsterOpacity              = source.MonsterOpacity;
+        MonsterBarWidth             = source.MonsterBarWidth;
+        MonsterBarHeight            = source.MonsterBarHeight;
+        MonsterBorderSize           = source.MonsterBorderSize;
+        MonsterColorMode            = source.MonsterColorMode;
     }
 }

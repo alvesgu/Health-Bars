@@ -59,6 +59,8 @@ public class HealthBarRenderer
     /// </summary>
     public void Draw(SpriteBatch b, Farmer player)
     {
+        if (!_config.ShowBarAtFullHealth && player.health >= player.maxHealth) return;
+
         // healthPercent is 0.0 (dead) … 1.0 (full health).
         float healthPercent = Math.Clamp((float)player.health / player.maxHealth, 0f, 1f);
 

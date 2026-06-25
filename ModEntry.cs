@@ -179,6 +179,13 @@ public class ModEntry : Mod
             formatValue:  v  => $"{(int)(v * 100)}%",
             fieldId: "opacity");
 
+        gmcm.AddBoolOption(ModManifest,
+            getValue: () => _liveConfig.ShowBarAtFullHealth,
+            setValue: v  => _liveConfig.ShowBarAtFullHealth = v,
+            name:     () => "Show at Full Health",
+            tooltip:  () => "When off, the bar is hidden while the player is at full health.",
+            fieldId: "show-bar-at-full-health");
+
         // ── Skin / style ──────────────────────────────────────────────────
 
         gmcm.AddSectionTitle(ModManifest, () => "Bar Style");
@@ -263,6 +270,15 @@ public class ModEntry : Mod
             fieldId: "show-monster-bars-full-health");
 
         gmcm.AddNumberOption(ModManifest,
+            getValue:    () => _liveConfig.MonsterOpacity,
+            setValue:    v  => _liveConfig.MonsterOpacity = v,
+            name:        () => "Monster Bar Opacity",
+            tooltip:     () => "Opacity of monster health bars, independent of the player bar opacity.",
+            min: 0.0f, max: 1.0f, interval: 0.05f,
+            formatValue: v  => $"{(int)(v * 100)}%",
+            fieldId: "monster-opacity");
+
+        gmcm.AddNumberOption(ModManifest,
             getValue: () => _liveConfig.MonsterBarWidth,
             setValue: v  => _liveConfig.MonsterBarWidth = v,
             name:     () => "Monster Bar Width",
@@ -308,12 +324,14 @@ public class ModEntry : Mod
                 case "bar-height"        when value is int    bh:  _liveConfig.BarHeight        = bh;  BarStyleFactory.ClearCache(); break;
                 case "vertical-offset"   when value is int    vo:  _liveConfig.VerticalOffset   = vo;  break;
                 case "horizontal-offset" when value is int    ho:  _liveConfig.HorizontalOffset = ho;  break;
-                case "opacity"           when value is float  tr:  _liveConfig.Opacity     = tr;  break;
+                case "opacity"                   when value is float  tr:  _liveConfig.Opacity            = tr;  break;
+                case "show-bar-at-full-health"  when value is bool   fb:  _liveConfig.ShowBarAtFullHealth = fb;  break;
                 case "skin-name"         when value is string sn:  _liveConfig.SkinName          = sn;  break;
                 case "bar-style"         when value is string s:   _liveConfig.BarStyle         = s;   BarStyleFactory.ClearCache(); break;
                 case "border-size"                when value is int    bsz: _liveConfig.BorderSize                = bsz; BarStyleFactory.ClearCache(); break;
-                case "show-monster-bars"          when value is bool   smb: _liveConfig.ShowMonsterBars            = smb; break;
-                case "show-monster-bars-full-health" when value is bool sf: _liveConfig.ShowMonsterBarsAtFullHealth = sf;  break;
+                case "show-monster-bars"             when value is bool   smb: _liveConfig.ShowMonsterBars            = smb; break;
+                case "show-monster-bars-full-health" when value is bool   sf:  _liveConfig.ShowMonsterBarsAtFullHealth = sf;  break;
+                case "monster-opacity"               when value is float  mo:  _liveConfig.MonsterOpacity             = mo;  break;
                 case "monster-bar-width"          when value is int    mw:  _liveConfig.MonsterBarWidth            = mw;  break;
                 case "monster-bar-height"         when value is int    mh:  _liveConfig.MonsterBarHeight           = mh;  break;
                 case "monster-border-size"        when value is int    mb:  _liveConfig.MonsterBorderSize          = mb;  break;

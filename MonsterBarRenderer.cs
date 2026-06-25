@@ -27,7 +27,7 @@ internal static class MonsterBarRenderer
         // +41 places the bar just above the monster's visible head rather than at the raw sprite-bounds top.
         int y = (int)(pos.Y - monster.Sprite.SpriteHeight * Game1.pixelZoom - h + 41);
 
-        float alpha    = Math.Clamp(config.Opacity, 0f, 1f);
+        float alpha    = Math.Clamp(config.MonsterOpacity, 0f, 1f);
         Color fill     = ResolveFillColor(pct, config) * alpha;
         bool  rounded  = config.BarStyle != "Flat";
         int   fillCapW = h / 2;
