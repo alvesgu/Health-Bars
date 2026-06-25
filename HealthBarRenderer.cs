@@ -308,7 +308,7 @@ public class HealthBarRenderer
                 DrawRect(b, x, y, fw, h, fill);
 
             if (barStyle == "Striped")
-                DrawBodyStripes(b, x, y, w, h, fillCapW, fw, fill, alpha);
+                DrawBodyStripes(b, x, y, w, h, fillCapW, fw, fill);
         }
 
         // 3. Skin tiles drawn on top of the fill.
@@ -402,7 +402,7 @@ public class HealthBarRenderer
             DrawRoundedFill(b, x, y, w, h, fillCapW, fw, fill);
 
             if (config.BarStyle == "Striped")
-                DrawBodyStripes(b, x, y, w, h, fillCapW, fw, fill, alpha);
+                DrawBodyStripes(b, x, y, w, h, fillCapW, fw, fill);
         }
 
         // Border drawn at the expanded bounds (x-bs, y-bs) so it grows outward.
@@ -418,8 +418,57 @@ public class HealthBarRenderer
     /// (+0.5 before truncation) to exactly match the transparency boundary baked
     /// into the border sprites — this eliminates any gap or overlap at the edge.
     /// </summary>
-    private static void DrawRoundedFill(SpriteBatch b, int x, int y, int totalW, int h,
-                                         int capW, int fillW, Color color)
+    /// <summary>
+    /// Draws only the ring between the outer capsule (x-bs, y-bs, w+2bs, h+2bs) and the inner
+    /// capsule (x, y, w, h). The center is left untouched so transparency behind it shows through.
+    /// </summary>
+    internal static void DrawRoundedRing(SpriteBatch b, int x, int y, int w, int h, int bs, Color c)
+    {
+        int outerW    = w + 2 * bs;
+        int outerH    = h + 2 * bs;
+        int outerCapW = outerH / 2;
+        int innerCapW = h / 2;
+
+        float outerCy = (outerH - 1) / 2f;
+        float outerR  = outerCapW - 0.5f;
+        float innerCy = (h - 1) / 2f;
+        float innerR  = innerCapW - 0.5f;
+
+        for (int row = 0; row < outerH; row++)
+        {
+            float outerDy  = row + 0.5f - outerCy;
+            float outerSq  = outerR * outerR - outerDy * outerDy;
+            int   outerIns = outerSq <= 0 ? outerCapW : (int)(outerCapW - MathF.Sqrt(outerSq) + 0.5f);
+
+            int innerRow = row - bs;
+            if (innerRow < 0 || innerRow >= h)
+            {
+                // Top/bottom cap rows — inner capsule doesn't exist here; draw full outer row.
+                int rowEnd = outerW - outerIns;
+                if (rowEnd > outerIns)
+                    DrawRect(b, x - bs + outerIns, y - bs + row, rowEnd - outerIns, 1, c);
+            }
+            else
+            {
+                // Middle rows — draw only left and right ring segments.
+                float innerDy  = innerRow + 0.5f - innerCy;
+                float innerSq  = innerR * innerR - innerDy * innerDy;
+                int   innerIns = innerSq <= 0 ? innerCapW : (int)(innerCapW - MathF.Sqrt(innerSq) + 0.5f);
+
+                int leftEnd    = bs + innerIns;
+                if (leftEnd > outerIns)
+                    DrawRect(b, x - bs + outerIns, y - bs + row, leftEnd - outerIns, 1, c);
+
+                int rightStart = outerW - bs - innerIns;
+                int rightEnd   = outerW - outerIns;
+                if (rightEnd > rightStart)
+                    DrawRect(b, x - bs + rightStart, y - bs + row, rightEnd - rightStart, 1, c);
+            }
+        }
+    }
+
+    internal static void DrawRoundedFill(SpriteBatch b, int x, int y, int totalW, int h,
+                                          int capW, int fillW, Color color)
     {
         float cy = (h - 1) / 2f;    // vertical center of the capsule
         float r  = capW - 0.5f;     // radius (pixel-center convention)
@@ -446,8 +495,8 @@ public class HealthBarRenderer
     /// Diagonal formula: pixel (col, row) is in a stripe when (col + row) % period &lt; stripeWidth.
     /// As row increases the stripe shifts left by one pixel, producing the / angle.
     /// </summary>
-    private static void DrawBodyStripes(SpriteBatch b, int x, int y, int totalW, int h,
-                                         int capW, int fillW, Color fill, float alpha)
+    internal static void DrawBodyStripes(SpriteBatch b, int x, int y, int totalW, int h,
+                                          int capW, int fillW, Color fill)
     {
         // 50% blend toward white gives enough contrast to be clearly visible.
         Color stripe = Color.Lerp(fill, Color.White, 0.5f);
@@ -503,7 +552,7 @@ public class HealthBarRenderer
     /// Preset color names (Red, Green, Blue …) bypass the gradient/custom logic
     /// for quick one-click color choices.
     /// </summary>
-    private static Color ResolveFillColor(float pct, ModConfig config) => config.ColorMode switch
+    internal static Color ResolveFillColor(float pct, ModConfig config) => config.ColorMode switch
     {
         "Custom"  => new Color(config.FillR,  config.FillG,  config.FillB),
         "Red"     => new Color(220, 30,  30),
@@ -536,6 +585,6 @@ public class HealthBarRenderer
     /// Draws a solid-color rectangle using the game's built-in 1×1 white pixel texture.
     /// This is the cheapest way to draw filled rectangles in XNA/MonoGame.
     /// </summary>
-    private static void DrawRect(SpriteBatch b, int x, int y, int w, int h, Color c) =>
+    internal static void DrawRect(SpriteBatch b, int x, int y, int w, int h, Color c) =>
         b.Draw(Game1.staminaRect, new Rectangle(x, y, w, h), c);
 }

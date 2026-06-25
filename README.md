@@ -7,6 +7,7 @@ A [Stardew Valley](https://www.stardewvalley.net/) mod that displays a health ba
 ## Features
 
 - Health bar drawn above the player's head, updating in real time.
+- Health bars drawn above every visible monster, centered over their head.
 - Three bar styles: **Flat**, **Rounded** (pill/capsule), and **Striped**.
 - Fill colors: **Gradient** (shifts through three stops as health changes), any of five **Preset** colors, or a fully **Custom** color.
 - Custom color pickers with palette swatches and individual R/G/B sliders for the fill, gradient stops, and border.
@@ -61,6 +62,12 @@ Without GMCM, open `Mods/HealthBars/config.json` in any text editor. The file is
 | `GradMidR/G/B` | `255, 255, 0` | Gradient color at 50% health (mid). |
 | `GradEndR/G/B` | `0, 200, 0` | Gradient color at 100% health (full / safe). |
 | `BorderR/G/B` | `30, 30, 30` | Border color (0–255 per channel). |
+| `ShowMonsterBars` | `true` | Draw health bars above monsters. |
+| `ShowMonsterBarsAtFullHealth` | `true` | When `false`, bars are hidden until a monster has taken at least one hit. |
+| `MonsterBarWidth` | `60` | Width of each monster health bar in pixels. |
+| `MonsterBarHeight` | `12` | Height of each monster health bar in pixels. |
+| `MonsterBorderSize` | `2` | Border thickness around monster health bars. `0` = no border. |
+| `MonsterColorMode` | `"Red"` | Fill color for monster bars: `"Red"`, `"Green"`, `"Blue"`, `"Yellow"`, `"Cyan"`, `"White"`, or `"Gradient"`. |
 
 ---
 
@@ -77,8 +84,8 @@ Without GMCM, open `Mods/HealthBars/config.json` in any text editor. The file is
 Requirements: [.NET 6 SDK](https://dotnet.microsoft.com/), SMAPI, and the game installed at a standard path.
 
 ```bash
-git clone https://github.com/alvesgu/stardew-healthbars.git
-cd stardew-healthbars
+git clone https://github.com/alvesgu/Health-Bars.git
+cd Health-Bars
 dotnet build
 ```
 
@@ -91,6 +98,7 @@ The mod DLL and manifest are copied to `Stardew Valley/Mods/HealthBars/` automat
 - **[alvesgu](https://github.com/alvesgu)** — mod author
 - [SMAPI](https://smapi.io/) by Pathoschild
 - [Generic Mod Config Menu](https://www.nexusmods.com/stardewvalley/mods/5098) by spacechase0
+- Monster health bar concept inspired by [hp-bars](https://github.com/mk-gg/hp-bars) by mk-gg, [Enemy Health Bar](https://www.nexusmods.com/stardewvalley/mods/7889) by OrSpeeder, and [Mini Bars](https://www.nexusmods.com/stardewvalley/mods/5967) by Coldopa
 
 ---
 

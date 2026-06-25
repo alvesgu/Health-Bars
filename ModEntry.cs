@@ -34,6 +34,7 @@ using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Monsters;
 
 namespace HealthBars;
 
@@ -78,9 +79,9 @@ public class ModEntry : Mod
         _liveConfig.CopyFrom(_config);
         _renderer   = new HealthBarRenderer(_config);
 
-        helper.Events.Display.RenderedWorld  += OnRenderedWorld;
-        helper.Events.Display.MenuChanged    += OnMenuChanged;
-        helper.Events.GameLoop.GameLaunched  += OnGameLaunched;
+        helper.Events.Display.RenderedWorld      += OnRenderedWorld;
+        helper.Events.Display.MenuChanged        += OnMenuChanged;
+        helper.Events.GameLoop.GameLaunched      += OnGameLaunched;
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
@@ -243,6 +244,57 @@ public class ModEntry : Mod
             () => _liveConfig.BorderG, v => _liveConfig.BorderG = v,
             () => _liveConfig.BorderB, v => _liveConfig.BorderB = v);
 
+        // ── Monster bars ──────────────────────────────────────────────────
+
+        gmcm.AddSectionTitle(ModManifest, () => "Monster Bars");
+
+        gmcm.AddBoolOption(ModManifest,
+            getValue: () => _liveConfig.ShowMonsterBars,
+            setValue: v  => _liveConfig.ShowMonsterBars = v,
+            name:     () => "Show Monster Bars",
+            tooltip:  () => "Draw a health bar above each visible monster.",
+            fieldId: "show-monster-bars");
+
+        gmcm.AddBoolOption(ModManifest,
+            getValue: () => _liveConfig.ShowMonsterBarsAtFullHealth,
+            setValue: v  => _liveConfig.ShowMonsterBarsAtFullHealth = v,
+            name:     () => "Show at Full Health",
+            tooltip:  () => "When off, bars are hidden until a monster has taken at least one hit.",
+            fieldId: "show-monster-bars-full-health");
+
+        gmcm.AddNumberOption(ModManifest,
+            getValue: () => _liveConfig.MonsterBarWidth,
+            setValue: v  => _liveConfig.MonsterBarWidth = v,
+            name:     () => "Monster Bar Width",
+            tooltip:  () => "Width of each monster health bar in pixels.",
+            min: 20, max: 120, interval: 4,
+            fieldId: "monster-bar-width");
+
+        gmcm.AddNumberOption(ModManifest,
+            getValue: () => _liveConfig.MonsterBarHeight,
+            setValue: v  => _liveConfig.MonsterBarHeight = v,
+            name:     () => "Monster Bar Height",
+            tooltip:  () => "Height of each monster health bar in pixels.",
+            min: 2, max: 24, interval: 2,
+            fieldId: "monster-bar-height");
+
+        gmcm.AddNumberOption(ModManifest,
+            getValue: () => _liveConfig.MonsterBorderSize,
+            setValue: v  => _liveConfig.MonsterBorderSize = v,
+            name:     () => "Monster Border Thickness",
+            tooltip:  () => "Border thickness around monster health bars. 0 = no border.",
+            min: 0, max: 6, interval: 1,
+            fieldId: "monster-border-size");
+
+        gmcm.AddTextOption(ModManifest,
+            getValue:           () => _liveConfig.MonsterColorMode,
+            setValue:           v  => _liveConfig.MonsterColorMode = v,
+            name:               () => "Monster Bar Color",
+            tooltip:            () => "Fill color for monster health bars. Gradient uses the same gradient stops as the player bar.",
+            allowedValues:      new[] { "Red", "Green", "Blue", "Yellow", "Cyan", "White", "Gradient" },
+            formatAllowedValue: v  => v,
+            fieldId: "monster-color-mode");
+
         // ── Field changed handler ─────────────────────────────────────────
         // GMCM fires this callback whenever any registered control's value changes.
         // We mirror the change into _liveConfig so the preview updates immediately.
@@ -259,7 +311,13 @@ public class ModEntry : Mod
                 case "opacity"           when value is float  tr:  _liveConfig.Opacity     = tr;  break;
                 case "skin-name"         when value is string sn:  _liveConfig.SkinName          = sn;  break;
                 case "bar-style"         when value is string s:   _liveConfig.BarStyle         = s;   BarStyleFactory.ClearCache(); break;
-                case "border-size"       when value is int    bsz: _liveConfig.BorderSize       = bsz; BarStyleFactory.ClearCache(); break;
+                case "border-size"                when value is int    bsz: _liveConfig.BorderSize                = bsz; BarStyleFactory.ClearCache(); break;
+                case "show-monster-bars"          when value is bool   smb: _liveConfig.ShowMonsterBars            = smb; break;
+                case "show-monster-bars-full-health" when value is bool sf: _liveConfig.ShowMonsterBarsAtFullHealth = sf;  break;
+                case "monster-bar-width"          when value is int    mw:  _liveConfig.MonsterBarWidth            = mw;  break;
+                case "monster-bar-height"         when value is int    mh:  _liveConfig.MonsterBarHeight           = mh;  break;
+                case "monster-border-size"        when value is int    mb:  _liveConfig.MonsterBorderSize          = mb;  break;
+                case "monster-color-mode"         when value is string mc:  _liveConfig.MonsterColorMode           = mc;  break;
 
                 // When a named color mode is selected, also sync FillR/G/B to the
                 // matching preset so custom-fill sliders show the correct color.
@@ -483,5 +541,8 @@ public class ModEntry : Mod
             return;
 
         _renderer.Draw(e.SpriteBatch, Game1.player);
+
+        foreach (var monster in Game1.currentLocation.characters.OfType<Monster>())
+            MonsterBarRenderer.Draw(e.SpriteBatch, monster, _config);
     }
 }
