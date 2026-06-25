@@ -129,7 +129,7 @@ public class HealthBarRenderer
             DrawRect(b, standingX - CharW / 2, standingY - CharH, CharW, CharH, new Color(100, 100, 100, 160));
         }
 
-        // Draw the bar at 65 % health so the gradient's mid-color is visible.
+        // Draw the bar at 65 % health so the gradient's orange mid-range color is visible.
         int barX = standingX - config.BarWidth / 2 + config.HorizontalOffset;
         // The -14 corrects for the difference between standingY (feet pixel used here)
         // and getStandingPosition() (which sits slightly above the feet pixel in Draw()).
@@ -568,17 +568,27 @@ public class HealthBarRenderer
 
     /// <summary>
     /// Smoothly interpolates across three color stops based on health percentage:
-    ///   0 % → GradStart,  50 % → GradMid,  100 % → GradEnd
+    ///   0 % → GradStart,  75 % → GradMid,  100 % → GradEnd
+    ///
+    /// The lower half (0–75 %) uses quadratic easing so the danger color (red)
+    /// persists deep into the health range and transitions to yellow quickly near 75 %.
+    /// This is important because the bar is physically small at low health, making
+    /// subtle color differences hard to notice — the warning must appear alarming early.
     /// </summary>
     private static Color ResolveGradient(float pct, ModConfig config)
     {
+        const float split = 0.75f;
+
         var start = new Color(config.GradStartR, config.GradStartG, config.GradStartB);
         var mid   = new Color(config.GradMidR,   config.GradMidG,   config.GradMidB);
         var end   = new Color(config.GradEndR,   config.GradEndG,   config.GradEndB);
 
-        return pct <= 0.5f
-            ? Color.Lerp(start, mid, pct * 2f)           // 0 % … 50 %
-            : Color.Lerp(mid,   end, (pct - 0.5f) * 2f); // 50 % … 100 %
+        if (pct <= split)
+        {
+            float t = pct / split;
+            return Color.Lerp(start, mid, t * t); // quadratic: stays red longer, snaps to yellow near 75 %
+        }
+        return Color.Lerp(mid, end, (pct - split) / (1f - split)); // 75 % … 100 %: linear yellow → green
     }
 
     // ── Utility ───────────────────────────────────────────────────────────────
