@@ -73,7 +73,7 @@ Without GMCM, open `Mods/HealthBars/config.json` in any text editor. The file is
 
 ## Compatibility
 
-- **Multiplayer**: the bar only tracks the local player.
+- **Multiplayer**: works in split-screen co-op (each player sees their own bar). Untested in online multiplayer.
 - **Other HUD mods**: should be compatible with most HUD mods since this mod draws during `RenderedWorld` and does not modify any game data.
 - **Android**: not tested.
 
