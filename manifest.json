@@ -1,9 +1,9 @@
 {
   "Name": "Health Bars",
-  "Author": "GustavoAM",
-  "Version": "1.0.0",
+  "Author": "alvesgu",
+  "Version": "1.1.0",
   "Description": "Displays a horizontal health bar above the player character.",
-  "UniqueID": "GustavoAM.HealthBars",
+  "UniqueID": "alvesgu.HealthBars",
   "EntryDll": "HealthBars.dll",
   "MinimumApiVersion": "4.0.0",
   "UpdateKeys": [],
